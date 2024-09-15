@@ -1,14 +1,23 @@
+from random import randint
+import random 
 saldo = 0
 limite = 500
 numero_saques = 0
 limite_saques = 3
 saque = 0
 extrato = 0
+agencia = '0001'
+conta = []
+usuarios = []
+contas_geradas = []
 while True:
     print("""[ 1 ] - DEPOSITAR
 [ 2 ] - SACAR 
 [ 3 ] - SALDO 
-[ 4 ] - SAIR
+[ 4 ] - NOVO USÚARIO
+[ 5 ] - CONSULTAR CONTA
+[ 6 ] - EXCLUIR CONTA
+[ 7 ] - SAIR
 """)
     opcao = int(input('----- MENU -----:'))
     if opcao == 1:
@@ -40,8 +49,65 @@ while True:
             print(f'Saque no valor de R${valor:.2f} efetuado com sucesso ')
     elif opcao == 3:
         print(f"""---------- SALDO DA CONTA ----------
-           R${saldo:.2f}""")
+               R${saldo:.2f}""")
     elif opcao == 4:
+         cpf = input('Informe seu CPF (somente números): ')
+         for usuario in usuarios:
+         #VERIFICA SE O CPF JÁ ESTÁ CADASTRADO, NESSE CÓDIGO NÃO ACEITA CPF IGUAIS
+              if usuario['cpf'] == cpf:
+                 cpf_existe = True
+                 print('CPF já cadastrado! Tente novamente')
+                 break
+         else:
+                nome = input('Irforme o nome completo:')
+                data_nascimento = input('Informe a data de nascimento (dd-mm-aaaa):')
+                while True:
+                    numero_conta = str(random.randint(1000000,9999999))
+                    #GERA UM NÚMERO DE 7 DÍGITOS
+                    if numero_conta not in contas_geradas:
+                    #VERIFICA SE A CONTA JA FOI GERADA E SE TEM NÃO TEM UMA IGUAL, CASO TENHA ELE NÃO ADICIONA
+                        contas_geradas.append(numero_conta)
+                    #ADICIONA A CONTA DE 7 DÍGITOS AO USÚARIO QUE VOCE CRIOU
+                        break
+                #PEGA OS SEIS PRIMEIROS DÍGITOS E O SÉTIMO TAMBÉM
+                seis_digitos = numero_conta[:6]
+                digito_final = numero_conta[6]
+                conta = f'{seis_digitos}-{digito_final}'
+                #conta = f'{len(usuarios) + 1:06}'
+                usuarios.append({'nome': nome,
+                                 'data_nascimento': data_nascimento,
+                                 'cpf': cpf,
+                                 'agencia': agencia,
+                                 'conta': conta
+                                 })
+                print('Usúario cadastrado com sucesso')
+                print(f'Conta gerada {conta}')
+
+    elif opcao == 5:
+         consultar = input('Informe o CPF para consultar a conta:')
+         for consult in usuarios:
+         #PERCORRE TODOS OS ELEMENTOS DA LISTA 'USÚARIOS', PARA CADA ELEMENTO DA LISTA USÚARIO, O LAÇO
+         #ATRIBUI O VALOR DO ELEMENTO USÚARIO À VARIÁVEL CONSULT
+         #INICIA-SE UM LAÇO PARA VERIFICAR SE O CPF QUE VOCE DIGITOU ESTÁ DENTRO DO DICIONARIO USÚARIOS
+            if consult['cpf'] == consultar:
+         #VERIFICA SE NO CONSULT O CPF É IGUAL A CONSULTAR, SE FOR ELE IMPRIME AS INFORMAÇÕES LOGO EM SEGUIDA
+                print(f'nome: {consult["nome"]}')
+                print(f'CPF: {consult["cpf"]}')
+                print(f'agencia: {consult["agencia"]}')
+                print(f'conta: {consult["conta"]}')
+                print('--------------------')
+         else:
+             print('CPF não existe ou foi excluído')
+
+    elif opcao == 6:
+        remover = input('informe o CPF para excluir a conta:')
+        for remove in usuarios:
+            if remove['cpf'] == remover:
+                usuarios.remove(remove)
+                print(f'Conta com o {remover} excluído com sucesso ')
+
+
+    elif opcao == 7:
         print('Saindo...')
         break
 

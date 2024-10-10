@@ -1,105 +1,61 @@
-from random import randint
-import random 
-saldo = 0
+from datetime import datetime
+
+saldo_saque = 0
 limite = 500
-numero_saques = 0
-limite_saques = 3
-saque = 0
 extrato = 0
-agencia = '0001'
-conta = []
-usuarios = []
-contas_geradas = []
+saldo = 0
+limite_saques = 3
+numero_saques = 0
+
+menu = """ 1. DEPOSITAR
+ 2. SACAR
+ 3. EXTRATO
+ 4. SAIR 
+>>> """
 while True:
-    print("""[ 1 ] - DEPOSITAR
-[ 2 ] - SACAR 
-[ 3 ] - SALDO 
-[ 4 ] - NOVO USÚARIO
-[ 5 ] - CONSULTAR CONTA
-[ 6 ] - EXCLUIR CONTA
-[ 7 ] - SAIR
-""")
-    opcao = int(input('----- MENU -----:'))
+    opcao = int(input(menu))
     if opcao == 1:
-        deposito = float(input('Qual valor voce quer depositar?'))
+        deposito = float(input('Qual o valor para depósito?'))
         extrato += deposito
         if deposito > 0:
             saldo += deposito
-            print(f'Deposito efetuado com sucesso')
+            print(f'\033[0;34mO deposito o valor de R${deposito:.2f} Efetuado com sucesso\033[m')
         else:
-            print('Operação invalida. Tente novamente')
+            print('\033[0;31mValor invalido! Tente novamente\033[m')
     elif opcao == 2:
-        valor = float(input('Qual valor voce quer sacar?'))
-        if valor < saldo and valor <= 500:
-            saque += valor
-        if valor == 500:
-            numero_saques += 1
-        excedeu_saldo = valor > saldo
-        excedeu_limite = valor > limite
-        excedeu_saques = numero_saques > limite_saques
+        valor_saque = float(input('Qual o valor para saque?'))
+        if valor_saque < saldo and valor_saque <= 500:
+            saldo_saque += valor_saque
+            if valor_saque == 500:
+                numero_saques += 1
+        elif valor_saque < 0:
+            print('\033[0;31mValor invalido! Tente novamente\033[m')
+
+        excedeu_saldo = valor_saque > saldo
+        excedeu_limite = valor_saque > limite
+        excedeu_saque = numero_saques > limite_saques
 
         if excedeu_saldo:
-            print('Operação falhou.Voce não tem saldo suficiente')
+            print('\033[0;31mOperação falhou.Voce não tem saldo suficiente\033[m')
         elif excedeu_limite:
-            print('Operação falhou. O valor do saque excede o limite')
-        elif excedeu_saques:
-            print('Operação falhou. Número máximo de saques excedido')
-        elif valor > 0:
-            saldo -= valor
-            print(f'Saque no valor de R${valor:.2f} efetuado com sucesso ')
+            print('\033[0;31mOperação falhou. O valor do saque excede o limite\033[m')
+        elif excedeu_saque:
+            print('\033[0;31mOperação falhou. Número máximo de saques excedido\033[m')
+        elif valor_saque > 0:
+            saldo -= valor_saque
+            print(f'\033[0;34mSaque no valor de R${valor_saque} Efetuado com sucesso\033[m')
+
+
     elif opcao == 3:
-        print(f"""---------- SALDO DA CONTA ----------
-               R${saldo:.2f}""")
+        print('-' * 20)
+        print('\033[0;34mEXTRATO DEPÓSITO BANCÁRIO\033[m ')
+        print(f'DEPÓSITO: R${extrato:.2f}')
+        print(f'VALOR TOTAL DE SAQUE: {saldo_saque:.2f}')
+        print(f'SALDO ATUAL: {saldo:.2f}')
+        hoje = datetime.now()  # Obtém a data e hora atuais
+        horario_formatado = hoje.strftime("%d/%m/%Y %H:%M:%S")
+        print(f'HORÁRIO: {horario_formatado}')
+        print('-' * 20)
     elif opcao == 4:
-         cpf = input('Informe seu CPF (somente números): ')
-         for usuario in usuarios:
-              if usuario['cpf'] == cpf:
-                 cpf_existe = True
-                 print('CPF já cadastrado! Tente novamente')
-                 break
-         else:
-                nome = input('Irforme o nome completo:')
-                data_nascimento = input('Informe a data de nascimento (dd-mm-aaaa):')
-                while True:
-                    numero_conta = str(random.randint(1000000,9999999))
-                    if numero_conta not in contas_geradas:
-                        contas_geradas.append(numero_conta)
-                        break
-                seis_digitos = numero_conta[:6]
-                digito_final = numero_conta[6]
-                conta = f'{seis_digitos}-{digito_final}'
-                usuarios.append({'nome': nome,
-                                 'data_nascimento': data_nascimento,
-                                 'cpf': cpf,
-                                 'agencia': agencia,
-                                 'conta': conta
-                                 })
-                print('Usúario cadastrado com sucesso')
-                print(f'Conta gerada {conta}')
-
-    elif opcao == 5:
-         consultar = input('Informe o CPF para consultar a conta:')
-         for consult in usuarios:
-            if consult['cpf'] == consultar:
-                print(f'nome: {consult["nome"]}')
-                print(f'CPF: {consult["cpf"]}')
-                print(f'agencia: {consult["agencia"]}')
-                print(f'conta: {consult["conta"]}')
-                print('--------------------')
-         else:
-             print('CPF não existe ou foi excluído')
-
-    elif opcao == 6:
-        remover = input('informe o CPF para excluir a conta:')
-        for remove in usuarios:
-            if remove['cpf'] == remover:
-                usuarios.remove(remove)
-                print(f'Conta com o {remover} excluído com sucesso ')
-
-
-    elif opcao == 7:
-        print('Saindo...')
+        print('SESSÃO FINALIZADA...')
         break
-
-print(f'Valor total sacado R${saque:.2f} reais')
-print(f'Valor total depositado R${extrato:.2f} reais ')

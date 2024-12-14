@@ -1,61 +1,80 @@
 from datetime import datetime
 
-saldo_saque = 0
-limite = 500
-extrato = 0
+saque = 0
 saldo = 0
-limite_saques = 3
-numero_saques = 0
+extrato = 0
+limite = 500
+limite_saque = 3
+numero_saque = 0
+saques = []
+depositos = []
 
 menu = """ 1. DEPOSITAR
  2. SACAR
  3. EXTRATO
- 4. SAIR 
+ 4. SAQUES REALIZADOS
+ 5. DEPÓSITOS REALIZADOS
+ 6. SAIR 
 >>> """
 while True:
     opcao = int(input(menu))
     if opcao == 1:
-        deposito = float(input('Qual o valor para depósito?'))
-        extrato += deposito
-        if deposito > 0:
-            saldo += deposito
-            print(f'\033[0;34mO deposito o valor de R${deposito:.2f} Efetuado com sucesso\033[m')
+        depositar = int(input('Qual o valor para depósito?'))
+        if depositar <= 0:
+            print('\033[0;31mValor de depósito invalido! Tente novamente\033[m')
         else:
-            print('\033[0;31mValor invalido! Tente novamente\033[m')
+            data_hora = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            saldo += depositar
+            extrato += depositar
+            depositos.append({'valor': depositar, 'data_hora': data_hora})
+            print(f'Depósito no valor de R$\033[0;34m{depositar}\033[m realizado com sucesso.')
+
     elif opcao == 2:
-        valor_saque = float(input('Qual o valor para saque?'))
-        if valor_saque < saldo and valor_saque <= 500:
-            saldo_saque += valor_saque
-            if valor_saque == 500:
-                numero_saques += 1
-        elif valor_saque < 0:
-            print('\033[0;31mValor invalido! Tente novamente\033[m')
+        sacar = int(input('Qual o valor do saque?'))
+        excedeu_saldo = sacar > saldo
+        excedeu_limite = sacar > limite
+        excedeu_saque = numero_saque >= limite_saque
 
-        excedeu_saldo = valor_saque > saldo
-        excedeu_limite = valor_saque > limite
-        excedeu_saque = numero_saques > limite_saques
-
-        if excedeu_saldo:
+        if sacar <= 0:
+            print('\033[0;31mValor inválido! Tente novamente\033[m')
+        elif excedeu_saldo:
             print('\033[0;31mOperação falhou.Voce não tem saldo suficiente\033[m')
         elif excedeu_limite:
             print('\033[0;31mOperação falhou. O valor do saque excede o limite\033[m')
         elif excedeu_saque:
             print('\033[0;31mOperação falhou. Número máximo de saques excedido\033[m')
-        elif valor_saque > 0:
-            saldo -= valor_saque
-            print(f'\033[0;34mSaque no valor de R${valor_saque} Efetuado com sucesso\033[m')
+        else:
+             numero_saque += 1
+             saldo -= sacar
+             saque += sacar
+             data_hora = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+             saques.append({'valor': sacar, 'data_hora': data_hora})
+             print(f'\033[0;34mSaque no valor de R${sacar} Efetuado com sucesso\033[m')
+
 
 
     elif opcao == 3:
         print('-' * 20)
         print('\033[0;34mEXTRATO DEPÓSITO BANCÁRIO\033[m ')
-        print(f'DEPÓSITO: R${extrato:.2f}')
-        print(f'VALOR TOTAL DE SAQUE: {saldo_saque:.2f}')
+        print(f'VALOR TOTAL DE DEPÓSITO: R${extrato:.2f}')
+        print(f'VALOR TOTAL DE SAQUE: {saque:.2f}')
         print(f'SALDO ATUAL: {saldo:.2f}')
         hoje = datetime.now()  # Obtém a data e hora atuais
         horario_formatado = hoje.strftime("%d/%m/%Y %H:%M:%S")
         print(f'HORÁRIO: {horario_formatado}')
         print('-' * 20)
+
     elif opcao == 4:
-        print('SESSÃO FINALIZADA...')
+        for saques in saques:
+            print(f'- Valor do saque: R$\033[0;34m{saques['valor']:.2f}\033[m '
+                  f'  Data/Hora: \033[0;34m{saques['data_hora']}\033[m')
+
+    elif opcao == 5:
+        for deposito in depositos:
+            print(f'- Valor do depósito: R$\033[0;34m{deposito['valor']:.2f}\033[m '
+                  f'  Data/Hora: \033[0;34m{deposito['data_hora']}\033[m')
+
+    elif opcao == 6:
+        print('Finalizando operação...')
         break
+
